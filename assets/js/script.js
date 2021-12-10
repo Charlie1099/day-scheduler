@@ -1,26 +1,40 @@
-//display the date at the top of the page under the text there
+$(document).ready(function () {
 
-saveEl.addEventListener(click, "#save")
+  var currentFormattedTime = moment().format('MMMM D, YYYY, dddd h:mm:ss a');
+  $("#currentDay").text(currentFormattedTime);
 
-//time blocks need to display the time 
-//and have color green if it is in the fucher and white for presint and 
-//red if past due.
+  var goldenTime = moment().hour();
+  $(".task-block").each(function (index, timeBlock) {
+    var hour = parseInt($(timeBlock).attr("hour"));
+    if (hour < goldenTime) {
+      $(timeBlock).addClass("past");
+    } else if (hour === goldenTime) {
+      $(timeBlock).addClass("present");
+    } else if (hour > goldenTime) {
+      $(timeBlock).addClass("future");
+    }
+  });
 
-  // get date from task element
-  
+  $(".saveBtn").on("click", function (event) {
+    var oldData = JSON.parse(localStorage.getItem("data")) || [];
+    var id = $(event.target).closest(".task-block").attr("hour");
+    var text = $(event.target).closest(".task-block").find(".description").val();
 
-  // convert to moment object at 5:00pm
- 
-  // remove any old classes from element
-  
+    var dataEntry = {
+      id: id,
+      text: text
+    }
 
-  // apply new class if task is near/over due date
-  
+    oldData.push(dataEntry);
+    localStorage.setItem("data", JSON.stringify(oldData));
+  });
+
+  var data = JSON.parse(localStorage.getItem("data")) || [];
+  data.forEach(function (datum) {
+    var query = `[hour='${datum.id}']`;
+    $(query).find(".description").val(datum.text);
+  });
 
 
-//need to make a button to save on local storage
-var saveTasks = function () {
-    localStorage.setItem("#saveBtn", JSON.stringify(tasks));
-  };
+});
 
-  
